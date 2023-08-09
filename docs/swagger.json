@@ -1,0 +1,10 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Hands API Development Records",
+        "title": "Hands API Development Records",
+        "contact": {},
+        "version": "1.0.0"
+    },
+    "paths": {}
+}

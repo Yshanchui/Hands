@@ -1,8 +1,17 @@
 package router
 
 import (
+	"context"
+	"fmt"
+	_ "github.com/Yshanchui/Hands/docs"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"net/http"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 type fnRegistRoute = func(public *gin.RouterGroup, auth *gin.RouterGroup)
@@ -11,6 +20,7 @@ var (
 	fnRoutes []fnRegistRoute
 )
 
+// RegistRoute 注册路由
 func RegistRoute(fn fnRegistRoute) {
 	if fn == nil {
 		return
@@ -18,7 +28,12 @@ func RegistRoute(fn fnRegistRoute) {
 	fnRoutes = append(fnRoutes, fn)
 }
 
+// InitRouter 初始化路由
 func InitRouter() {
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
+	// gin注册路由
 	r := gin.Default()
 
 	public := r.Group("/api/v1/public")
@@ -30,14 +45,38 @@ func InitRouter() {
 		fnRegistRoute(public, auth)
 	}
 
+	// swagger集成
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	prot := viper.GetString("server.port")
 	if prot == "" {
 		prot = "8080"
 	}
-	err := r.Run(":" + prot)
-	if err != nil {
-		panic("Start Server Error: " + err.Error())
+
+	srv := &http.Server{
+		Addr:    ":" + prot,
+		Handler: r,
 	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			fmt.Printf("listen: %s\n", err)
+			return
+		}
+	}()
+
+	<-ctx.Done()
+	stop()
+	fmt.Println("shutting down gracefully, press Ctrl+C again to force")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		fmt.Printf("server shutdown: %s\n", err)
+		return
+	}
+	fmt.Println("server exiting")
 }
 
 func InitBasePlatformRoutes() {
