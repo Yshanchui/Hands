@@ -3,5 +3,30 @@ info:
   description: Hands API Development Records
   title: Hands API Development Records
   version: 1.0.0
-paths: {}
+paths:
+  /api/v1/public/user/login:
+    post:
+      description: User Login Detailed Description
+      parameters:
+      - description: username
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: password
+        in: formData
+        name: password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"msg": "Login Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Login Failed"}'
+          schema:
+            type: string
+      tags:
+      - User
 swagger: "2.0"

@@ -1,9 +1,9 @@
 package router
 
 import (
+	_ "Hands/docs"
 	"context"
 	"fmt"
-	_ "github.com/Yshanchui/Hands/docs"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	swaggerFiles "github.com/swaggo/files"
