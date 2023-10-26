@@ -1,2 +1,13 @@
+mode:
+  develop: true
 server:
   port: 8888
+
+log:
+  MaxSize: 1
+  MaxBackups: 10
+  MaxAge: 90
+db:
+  dsn: "root:root@tcp(192.168.194.186:3306)/hands?charset=utf8mb4&parseTime=True&loc=Local"
+  maxIdleConn: 100
+  maxOpenConn: 100

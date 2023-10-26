@@ -2,6 +2,7 @@ package router
 
 import (
 	_ "Hands/docs"
+	"Hands/global"
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -59,6 +60,7 @@ func InitRouter() {
 	}
 
 	go func() {
+		global.Logger.Info("Start Listen:", prot)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			fmt.Printf("listen: %s\n", err)
 			return
@@ -73,10 +75,11 @@ func InitRouter() {
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		fmt.Printf("server shutdown: %s\n", err)
+		//
+		global.Logger.Error(fmt.Sprintf("server shutdown: %s\n", err.Error()))
 		return
 	}
-	fmt.Println("server exiting")
+	global.Logger.Info("server exiting")
 }
 
 func InitBasePlatformRoutes() {
