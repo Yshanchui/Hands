@@ -20,16 +20,22 @@ func Start() {
 	if err != nil {
 		initErr = utils.AppendError(initErr, err)
 	}
+	//初始化redis连接
+	rdClient, err := conf.InitRedis()
+	global.RedisClient = rdClient
+	if err != nil {
+		initErr = utils.AppendError(initErr, err)
+	}
+
+	//初始化过程中是否存在错误
 	if initErr != nil {
 		if global.Logger != nil {
 			global.Logger.Error(initErr.Error())
 		}
 		panic(initErr.Error())
-
 	}
 	//初始化系统路由
 	router.InitRouter()
-
 }
 
 func Clean() {
