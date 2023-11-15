@@ -9,7 +9,13 @@ import (
 func InitUserRoutes() {
 	RegistRoute(func(public, auth *gin.RouterGroup) {
 		userApi := api.NewUserApi()
-		publicUser := public.Group("/user")
+		publicUser := public.Group("user").Use(func() gin.HandlerFunc {
+			return func(c *gin.Context) {
+				//c.JSON(200, gin.H{
+				//	"msg": "Login MiddleWare",
+				//})
+			}
+		}())
 		{
 			publicUser.POST("/login", userApi.Login)
 		}
